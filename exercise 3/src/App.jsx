@@ -1,5 +1,4 @@
 import React from "react";
-
 import OrderCard from "./components/OrderCard";
 import CheckoutButton from "./components/CheckoutButton";
 
@@ -24,6 +23,26 @@ const ORDERS = [
 export default function App() {
   const [orders, setOrders] = React.useState(ORDERS);
 
+  const handleIncrease = (index) => {
+    const newOrders = [...orders];
+    newOrders[index].quantity += 1;
+    setOrders(newOrders);
+  };
+
+  const handleDecrease = (index) => {
+    const newOrders = [...orders];
+    if (newOrders[index].quantity > 0) {
+      newOrders[index].quantity -= 1;
+      setOrders(newOrders);
+    }
+  };
+
+  const calculateTotal = () => {
+    return orders.reduce((total, order) => {
+      return total + (order.price * order.quantity);
+    }, 0).toFixed(2);
+  };
+
   return (
     <>
       <header>
@@ -31,10 +50,19 @@ export default function App() {
       </header>
 
       <div className="order-list">
-        <OrderCard></OrderCard>
+        {orders.map((order, index) => (
+          <OrderCard
+            key={index}
+            product={order.product}
+            price={order.price}
+            quantity={order.quantity}
+            onDecrease={() => handleDecrease(index)}
+            onIncrease={() => handleIncrease(index)}
+          />
+        ))}
       </div>
 
-      <CheckoutButton total="TODO"></CheckoutButton>
+      <CheckoutButton total={calculateTotal()} />
     </>
   );
 }
